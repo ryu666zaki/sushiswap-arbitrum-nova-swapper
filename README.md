@@ -3,7 +3,7 @@
 
 ## Установка
 
-> pip install -r requirements.txt
+` pip install -r requirements.txt `
 
 
-Помещаем в main.py свои приватники, и запускаем скрипт.
+Помещаем в `main.py` свои приватники, и запускаем скрипт.
