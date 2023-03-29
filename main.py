@@ -26,9 +26,6 @@ sushi_router = w3.eth.contract(address=sushi_router_address, abi=router_abi)
 WETH = Web3.to_checksum_address('0x722e8bdd2ce80a4422e880164f2079488e115365')
 USDC = Web3.to_checksum_address('0x750ba8b76187092B0D1E87E28daaf484d1b5273b')
 
-# Словарь для хранения первоначальных балансов
-initial_eth_balance = {}
-
 # Время ожидания между транзакциями
 sleep_time_min = 2
 sleep_time_max = 3
@@ -43,8 +40,6 @@ def swap(key):
     address = account.address
 
     eth_balance = w3.eth.get_balance(address)
-    usdc_balance = w3.eth.call({"to": USDC, "data": f"0x70a08231{address[2:].zfill(64)}"}, 'latest')
-    usdc_balance = int(usdc_balance.hex(), 16)
     nonce = w3.eth.get_transaction_count(address)
 
     # ETH -> WETH -> USDC
@@ -59,7 +54,7 @@ def swap(key):
             "from": address,
             "value": swap_amount,
             "gasPrice": w3.eth.gas_price,
-             "nonce": nonce,
+            "nonce": nonce,
         })
         signed_txn = w3.eth.account.sign_transaction(txn, key)
         tx_hash = w3.eth.send_raw_transaction(signed_txn.rawTransaction)
@@ -104,6 +99,8 @@ def swap(key):
         deadline = w3.eth.get_block("latest")["timestamp"] + 300
         path = [USDC, WETH]
         amount_out_min = 0
+        usdc_balance = w3.eth.call({"to": USDC, "data": f"0x70a08231{address[2:].zfill(64)}"}, 'latest')
+        usdc_balance = int(usdc_balance.hex(), 16)
         swap_amount = usdc_balance
         txn = sushi_router.functions.swapExactTokensForETH(
             swap_amount, amount_out_min, path, address, deadline
@@ -126,7 +123,6 @@ def swap(key):
 
 def main():
     count = 0
-    # Тут можете выставить количество кругов транзакций. 1 круг - 2 транзакции. Я себе выставил 10, вы же выставляйте сколько вам нужно
     while count < 10:
         for key in private_keys:
             swap(key)
@@ -135,3 +131,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
