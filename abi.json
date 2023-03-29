@@ -1,7 +1,4 @@
-{
-    "name": "Sushiswap",
-    "abi": [
-        {
+[{
             "inputs": [
                 {
                     "internalType": "address",
@@ -971,6 +968,4 @@
         {
             "stateMutability": "payable",
             "type": "receive"
-        }
-    ]
-}
+        }]
