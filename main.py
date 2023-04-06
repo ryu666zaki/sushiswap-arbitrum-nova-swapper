@@ -5,15 +5,17 @@ from termcolor import cprint
 import time
 from tqdm import tqdm
 
-# Введите список приватных ключей
+# Put your lis of privatekeys
 private_keys = [
-    'сюда приватник',
-    'и сюда еще один',
-    # и так далее.
+    'private_key',
+    'private_key',
+    
 ]
 
-# Инициализация провайдера и контрактов
-nova_rpc = 'https://nova.arbitrum.io/rpc'  # Введите URL вашего провайдера
+# times to run swaps -> ETH -> WETH -> USDC -> ETH = 1 time
+TIMES = 10 
+
+nova_rpc = 'https://nova.arbitrum.io/rpc'  
 w3 = Web3(Web3.HTTPProvider(nova_rpc))
 nova_scan = 'https://nova.arbiscan.io/tx'
 chain_id = 42170
@@ -22,11 +24,11 @@ sushi_router_address = Web3.to_checksum_address('0x1b02dA8Cb0d097eB8D57A175b88c7
 router_abi = json.load(open('abi.json', 'r'))
 sushi_router = w3.eth.contract(address=sushi_router_address, abi=router_abi)
 
-# Константы
+
 WETH = Web3.to_checksum_address('0x722e8bdd2ce80a4422e880164f2079488e115365')
 USDC = Web3.to_checksum_address('0x750ba8b76187092B0D1E87E28daaf484d1b5273b')
 
-# Время ожидания между транзакциями
+# min delay, max delay
 sleep_time_min = 2
 sleep_time_max = 3
 
@@ -68,12 +70,12 @@ def swap(key):
 
     nonce += 1
 
-    # Апрувим
+    # Approve
     try:
         max_amount = w3.to_wei(2 ** 64 - 1, 'ether')
         max_amount_hex = w3.to_hex(max_amount)[2:].zfill(64)
 
-        # Разрешение на списание USDC
+        # USDC
         transaction = {
             "from": address,
             "to": USDC,
@@ -123,7 +125,7 @@ def swap(key):
 
 def main():
     count = 0
-    while count < 10:
+    while count < TIMES:
         for key in private_keys:
             swap(key)
         count += 1
